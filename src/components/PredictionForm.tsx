@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Flame, Loader2 } from "lucide-react";
+import WorkoutTypeSelector from "./WorkoutTypeSelector";
+import { calculateCaloriesByWorkout, workoutTypes } from "@/lib/workoutTypes";
 
 interface FormData {
   gender: string;
@@ -10,12 +12,17 @@ interface FormData {
   duration: string;
   heartRate: string;
   bodyTemp: string;
+  workoutType: string;
 }
 
 interface PredictionResult {
   calories: number;
   bmi: number;
   bmiStatus: string;
+  workoutType: string;
+  duration: number;
+  heartRate: number;
+  weight: number;
 }
 
 interface PredictionFormProps {
@@ -32,12 +39,20 @@ const PredictionForm = ({ onResult }: PredictionFormProps) => {
     duration: "",
     heartRate: "",
     bodyTemp: "",
+    workoutType: "running",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value
+    }));
+  };
+
+  const handleWorkoutTypeChange = (typeId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      workoutType: typeId
     }));
   };
 
@@ -62,25 +77,39 @@ const PredictionForm = ({ onResult }: PredictionFormProps) => {
 
     const weight = parseFloat(formData.weight);
     const height = parseFloat(formData.height);
+    const duration = parseFloat(formData.duration);
+    const heartRate = parseFloat(formData.heartRate);
+    const bodyTemp = parseFloat(formData.bodyTemp);
+    const age = parseFloat(formData.age);
+    const isMale = formData.gender === "male";
+    
     const { bmi, status } = calculateBMI(weight, height);
 
-    // Simulated calorie prediction based on inputs
-    const baseCalories = parseFloat(formData.duration) * 7;
-    const heartRateFactor = (parseFloat(formData.heartRate) - 60) * 0.5;
-    const tempFactor = (parseFloat(formData.bodyTemp) - 36.5) * 20;
-    const genderFactor = formData.gender === "male" ? 1.1 : 1;
-    const ageFactor = 1 - (parseFloat(formData.age) - 25) * 0.005;
-    
-    const calories = Math.round((baseCalories + heartRateFactor + tempFactor) * genderFactor * ageFactor);
+    // Calculate calories using workout-specific MET values
+    const calories = calculateCaloriesByWorkout(
+      formData.workoutType,
+      weight,
+      duration,
+      heartRate,
+      bodyTemp,
+      age,
+      isMale
+    );
 
     onResult({
       calories: Math.max(50, calories),
       bmi,
       bmiStatus: status,
+      workoutType: formData.workoutType,
+      duration,
+      heartRate,
+      weight,
     });
 
     setIsLoading(false);
   };
+
+  const selectedWorkout = workoutTypes.find(w => w.id === formData.workoutType);
 
   const inputClasses = "w-full h-12 px-4 rounded-lg input-glass text-foreground placeholder:text-muted-foreground focus:outline-none";
   const labelClasses = "block text-sm font-medium text-muted-foreground mb-2";
@@ -102,11 +131,20 @@ const PredictionForm = ({ onResult }: PredictionFormProps) => {
         </div>
         
         {/* Form card */}
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           <form 
             onSubmit={handleSubmit}
             className="glass-card-glow rounded-3xl p-8 sm:p-10"
           >
+            {/* Workout type selector */}
+            <div className="mb-8">
+              <label className={labelClasses}>Select Workout Type</label>
+              <WorkoutTypeSelector 
+                selectedType={formData.workoutType} 
+                onSelect={handleWorkoutTypeChange} 
+              />
+            </div>
+
             <div className="grid sm:grid-cols-2 gap-6">
               {/* Gender */}
               <div>
