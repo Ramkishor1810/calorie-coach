@@ -1,11 +1,12 @@
-import { Flame } from "lucide-react";
+import { Flame, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface NavbarProps {
   onStartPrediction: () => void;
+  onViewDashboard?: () => void;
 }
 
-const Navbar = ({ onStartPrediction }: NavbarProps) => {
+const Navbar = ({ onStartPrediction, onViewDashboard }: NavbarProps) => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-card border-b border-white/5">
       <div className="container px-6">
@@ -26,15 +27,27 @@ const Navbar = ({ onStartPrediction }: NavbarProps) => {
             <a href="#how" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               How It Works
             </a>
+            <a href="#dashboard" className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5">
+              <BarChart3 className="w-4 h-4" />
+              Dashboard
+            </a>
             <a href="#use-cases" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Use Cases
             </a>
           </div>
           
           {/* CTA */}
-          <Button variant="default" size="sm" onClick={onStartPrediction}>
-            Try Now
-          </Button>
+          <div className="flex items-center gap-3">
+            {onViewDashboard && (
+              <Button variant="outline" size="sm" onClick={onViewDashboard} className="hidden sm:flex">
+                <BarChart3 className="w-4 h-4 mr-1.5" />
+                Dashboard
+              </Button>
+            )}
+            <Button variant="default" size="sm" onClick={onStartPrediction}>
+              Try Now
+            </Button>
+          </div>
         </div>
       </div>
     </nav>
