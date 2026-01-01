@@ -14,7 +14,176 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      fitness_goals: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          period: string
+          target_calories: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          period: string
+          target_calories: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          period?: string
+          target_calories?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      predictions: {
+        Row: {
+          bmi: number
+          bmi_status: string
+          calories: number
+          created_at: string
+          duration: number
+          heart_rate: number
+          id: string
+          user_id: string
+          weight: number
+          workout_id: string | null
+          workout_type: string
+        }
+        Insert: {
+          bmi: number
+          bmi_status: string
+          calories: number
+          created_at?: string
+          duration: number
+          heart_rate: number
+          id?: string
+          user_id: string
+          weight: number
+          workout_id?: string | null
+          workout_type: string
+        }
+        Update: {
+          bmi?: number
+          bmi_status?: string
+          calories?: number
+          created_at?: string
+          duration?: number
+          heart_rate?: number
+          id?: string
+          user_id?: string
+          weight?: number
+          workout_id?: string | null
+          workout_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_workout_id_fkey"
+            columns: ["workout_id"]
+            isOneToOne: false
+            referencedRelation: "workouts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          age: number | null
+          created_at: string
+          full_name: string | null
+          gender: string | null
+          height: number | null
+          id: string
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          age?: number | null
+          created_at?: string
+          full_name?: string | null
+          gender?: string | null
+          height?: number | null
+          id?: string
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          age?: number | null
+          created_at?: string
+          full_name?: string | null
+          gender?: string | null
+          height?: number | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
+      workouts: {
+        Row: {
+          body_temperature: number | null
+          created_at: string
+          duration: number
+          heart_rate: number
+          id: string
+          user_id: string
+          workout_type: string
+        }
+        Insert: {
+          body_temperature?: number | null
+          created_at?: string
+          duration: number
+          heart_rate: number
+          id?: string
+          user_id: string
+          workout_type: string
+        }
+        Update: {
+          body_temperature?: number | null
+          created_at?: string
+          duration?: number
+          heart_rate?: number
+          id?: string
+          user_id?: string
+          workout_type?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
